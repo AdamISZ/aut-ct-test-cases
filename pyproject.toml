@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aut-ct-test-cases"
+version = "0.1"
+description = "Building test cases for AUT-CT"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "bitcointx",
+]
+
+[project.urls]
+repository = "https://github.com/AdamISZ/aut-ct-test-cases.git"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["*.test"]
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
