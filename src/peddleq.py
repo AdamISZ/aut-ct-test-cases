@@ -258,7 +258,7 @@ def create_test_cases():
         # we use formats convenient for the Rust codebase, which are:
         # ark-compressed for points and
         # little endian for 32 byte scalars
-        casedict = {"Pedersen-DLEQ case " : str(i),
+        casedict = {"case" : str(i),
                     "priv": hexer(priv),
                     "r": get_rev_bytes(hexer(r), "hex"),
                     "s": get_rev_bytes(hexer(s), "hex"),
