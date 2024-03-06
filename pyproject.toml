@@ -9,7 +9,7 @@ description = "Building test cases for AUT-CT"
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
-    "bitcointx",
+    "python-bitcointx",
 ]
 
 [project.urls]

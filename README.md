@@ -1,6 +1,8 @@
 # Test cases and auditing of operation of Pedersen-DLEQ proofs for the "Anonymous Usage Tokens with Curve Trees" project.
  
-Should be installable with `pip install .`. Note that there is currently only one external dependency, namely [this one](https://pypi.org/project/python-bitcointx/), which we use for manipulation of secp256k1 points in Python.
+Should be installable with `pip install .`.
+
+Note that there is currently only one external dependency, namely [this one](https://pypi.org/project/python-bitcointx/), which we use for manipulation of secp256k1 points in Python.
 
 To create test cases, run `src/peddleq.py create`. See that source file for other possible arguments for auditing specific cases.
 
