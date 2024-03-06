@@ -271,7 +271,7 @@ def create_test_cases():
                     "sigma2": get_rev_bytes(hexer(sigma2), "hex"),
                     "e": hexer(get_challenge(R1, R2, pc, ki).to_bytes())}
         cases.append(casedict)
-    with open("testcases.txt", "wb") as f:
+    with open("testcases.json", "wb") as f:
         f.write(json.dumps(cases, indent=4).encode())
         
 
