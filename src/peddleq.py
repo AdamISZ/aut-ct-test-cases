@@ -179,8 +179,7 @@ def challenge_bytes(R1, R2, C, C2):
     currently:
     """
     strob = Strobe128.new(b"Merlin v1.0")
-    # TODO: dumb labels!
-    append_message_to_strobe(strob, b"dom-sep", b"ped-dleq-test")
+    append_message_to_strobe(strob, b"dom-sep", b"autct v1.0")
     append_message_to_strobe(strob, b"dom-sep", b"peddleqproof")
     append_message_to_strobe(strob, b"n", b"\x01" + b"\x00"*7)
     for i, pt in enumerate([R1, R2, C, C2]):
@@ -259,7 +258,7 @@ def create_test_cases():
         # ark-compressed for points and
         # little endian for 32 byte scalars
         casedict = {"case" : str(i),
-                    "priv": hexer(priv),
+                    "privkey": hexer(priv),
                     "r": get_rev_bytes(hexer(r), "hex"),
                     "s": get_rev_bytes(hexer(s), "hex"),
                     "t": hexer(get_rev_bytes(hexer(t))),
