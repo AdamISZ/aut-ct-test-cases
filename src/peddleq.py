@@ -182,6 +182,7 @@ def challenge_bytes(R1, R2, C, C2):
     append_message_to_strobe(strob, b"dom-sep", b"autct v1.0")
     append_message_to_strobe(strob, b"dom-sep", b"peddleqproof")
     append_message_to_strobe(strob, b"n", b"\x01" + b"\x00"*7)
+    append_message_to_strobe(strob, b"dom-sep", b"default-app-context-label")
     for i, pt in enumerate([R1, R2, C, C2]):
         append_message_to_strobe(strob, str(i+1).encode(), pt)
     strob.meta_ad(b"e", False)
