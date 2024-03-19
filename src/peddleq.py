@@ -242,7 +242,7 @@ def create_test_cases():
     # generator J is fixed in our Rust codebase; for H, we can stick
     # with the default created by the Curve Trees repo:    
     Hconverted = get_pt_from_ark_hex("87163d621f520cca22c42466af3b046475db26a1177166ba51eac76fc31dc35680")
-    Jconverted = get_pt_from_ark_hex("b59adaae3dfb856a2869b29b0fa4b2ac31d27926e8b49150185e0224c9451c7980")
+    Jconverted = get_pt_from_ark_hex("8b83abe82165bb307765108df1331692f0249e101a39899e19f0ee3a9fbfb7c480")
     # build 10 test cases:
     cases = []
     for i in range(10):
