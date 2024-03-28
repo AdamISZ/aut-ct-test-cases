@@ -179,7 +179,7 @@ def challenge_bytes(R1, R2, C, C2):
     currently:
     """
     strob = Strobe128.new(b"Merlin v1.0")
-    append_message_to_strobe(strob, b"dom-sep", b"autct v1.0")
+    append_message_to_strobe(strob, b"dom-sep", b"autct-v1.0")
     append_message_to_strobe(strob, b"dom-sep", b"peddleqproof")
     append_message_to_strobe(strob, b"n", b"\x01" + b"\x00"*7)
     append_message_to_strobe(strob, b"dom-sep", b"default-app-context-label")

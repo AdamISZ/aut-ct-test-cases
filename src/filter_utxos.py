@@ -23,7 +23,7 @@ There are pros and cons to allowing repeated pubkeys here, depending on the usag
 """
 
 import sys
-from sqlite3 import connect
+from sqlite3 import connect, Cursor, Row
 
 def setup_db(fn):
     source = connect(fn)
@@ -32,7 +32,7 @@ def setup_db(fn):
 def select_the_scripts(db, low_filter):
     spks = db.execute(
         "SELECT scriptpubkey FROM 'utxos' WHERE value >= ? \
-        AND scriptpubkey LIKE '5120%';").fetchall()
+        AND scriptpubkey LIKE '5120%';", (low_filter,)).fetchall()
     return [x[0] for x in spks]
 
 if __name__ == "__main__":
@@ -41,5 +41,5 @@ if __name__ == "__main__":
     c = setup_db(sys.argv[2])
     spks = select_the_scripts(c, sys.argv[1])
     print("Retrieved this many taproot pubkeys: ", len(spks))
-    with open(sys.argv[2], "wb") as f:
+    with open(sys.argv[3], "wb") as f:
         f.write((" ".join([x[4:] for x in spks])).encode())
