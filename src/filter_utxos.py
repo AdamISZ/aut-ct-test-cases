@@ -24,22 +24,53 @@ There are pros and cons to allowing repeated pubkeys here, depending on the usag
 
 import sys
 from sqlite3 import connect, Cursor, Row
+from utils import hextobin, bintohex
+from peddleq import get_pt_from_ark_hex, convert_to_ark_compressed,pointadd, pointmult
 
 def setup_db(fn):
     source = connect(fn)
     return source.cursor()
 
-def select_the_scripts(db, low_filter):
+def select_the_scripts(db, low_filter, audit=False):
     spks = db.execute(
-        "SELECT scriptpubkey FROM 'utxos' WHERE value >= ? \
+        "SELECT scriptpubkey, value FROM 'utxos' WHERE value >= ? \
         AND scriptpubkey LIKE '5120%';", (low_filter,)).fetchall()
-    return [x[0] for x in spks]
+    if audit:
+        print("Example values:")
+        print(spks[1][1])
+        print(spks[100][1])
+        return [(x[0], x[1]) for x in spks]
+    else:
+        return [x[0] for x in spks]
 
 if __name__ == "__main__":
     print("Using sat value filter: {}, input file: {}\
-    , and output file: {}".format(*sys.argv[1:]))
+    , and output file: {}".format(*sys.argv[1:4]))
     c = setup_db(sys.argv[2])
-    spks = select_the_scripts(c, sys.argv[1])
+    audit = True if len(sys.argv) > 4 and sys.argv[4] == "audit" else False
+    spks = select_the_scripts(c, sys.argv[1], audit)
     print("Retrieved this many taproot pubkeys: ", len(spks))
-    with open(sys.argv[3], "wb") as f:
-        f.write((" ".join([x[4:] for x in spks])).encode())
+    if not audit:
+        with open(sys.argv[3], "wb") as f:
+            f.write((" ".join([x[4:] for x in spks])).encode())
+    else:
+        # we need to add the value as an additive tweak,
+        # with the generator J; see the aut-ct repo for how J is generated.
+        Jhex = "c208099c7e3d51e60f29d835bd108c50fe5e6b1c2fe59cf2bb2b111b9a12f2c480"
+        J = get_pt_from_ark_hex(Jhex)
+        pubkeysvalueslist = [(x[0][4:], x[1]) for x in spks]
+        with open(sys.argv[3], "w") as f:
+            Cs = []
+            lenp = len(pubkeysvalueslist)
+            for (pub, val) in pubkeysvalueslist:
+                try:
+                    Cs.append(convert_to_ark_compressed(
+                        pointadd([pointmult(val.to_bytes(
+                        32, byteorder="big"), J),
+                        hextobin("02"+pub)]))) # 02 is always correct here; bip340 from chain
+                except ValueError:
+                    print("Invalid hex detected, ignoring")
+
+            f.write(" ".join([bintohex(y) for y in Cs]))
+
+

@@ -4,15 +4,32 @@ import hashlib
 import struct
 import binascii
 import ctypes
-from typing import Tuple, List
+from typing import Tuple, List, Union
 from bitcointx.core.secp256k1 import get_secp256k1
 from bitcointx.core.key import CKey, CPubKey
+from bitcointx import base58
+from bitcointx.core import Hash
+from bitcointx.wallet import P2TRCoinAddress
 secp_obj = get_secp256k1()
 secp_obj.lib.secp256k1_ec_pubkey_tweak_mul.restype = ctypes.c_int
 secp_obj.lib.secp256k1_ec_pubkey_tweak_mul.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
 groupN  = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
 
 infty = "INFTY"
+
+def get_p2tr_address_from_raw_wif(privwif: str) -> P2TRCoinAddress:
+    binpriv = b58check_to_bin(privwif)[1][:32]
+    binpub = CKey(binpriv).pub
+    return P2TRCoinAddress.from_pubkey(binpub)
+
+def b58check_to_bin(s: str) -> bytes:
+    data = base58.decode(s)
+    assert Hash(data[:-4])[:4] == data[-4:]
+    return struct.pack(b"B", data[0]), data[1:-4]
+
+def hextobin(h):
+    """Convert a hex string to bytes"""
+    return binascii.unhexlify(h.encode('utf8'))
 
 def bintohex(b):
     """Convert bytes to a hex string"""
