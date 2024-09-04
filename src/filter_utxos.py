@@ -52,6 +52,8 @@ if __name__ == "__main__":
     height = None if len(sys.argv) > 6 else int(sys.argv[5])
     spks = select_the_scripts(c, sys.argv[1], height)
     print("Retrieved this many taproot pubkeys: ", len(spks))
+    pkonly = [x[0] for x in spks]
+    print("This many unique sPKs: {}".format(len(set(pkonly))))
     if not audit:
         with open(sys.argv[3], "wb") as f:
             f.write((" ".join([x[0][4:] for x in spks])).encode())
