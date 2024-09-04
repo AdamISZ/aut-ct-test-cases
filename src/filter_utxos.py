@@ -31,28 +31,30 @@ def setup_db(fn):
     source = connect(fn)
     return source.cursor()
 
-def select_the_scripts(db, low_filter, audit=False):
-    spks = db.execute(
-        "SELECT scriptpubkey, value FROM 'utxos' WHERE value >= ? \
-        AND scriptpubkey LIKE '5120%';", (low_filter,)).fetchall()
-    if audit:
-        print("Example values:")
-        print(spks[1][1])
-        print(spks[100][1])
-        return [(x[0], x[1]) for x in spks]
+def select_the_scripts(db, low_filter, height=None):
+    if height is None:
+        qrystring = "SELECT scriptpubkey, value FROM 'utxos' WHERE value >= ? \
+        AND scriptpubkey LIKE '5120%';"
+        tpl = (low_filter,)
     else:
-        return [x[0] for x in spks]
+        qrystring = "SELECT scriptpubkey, value FROM 'utxos' WHERE value >= ? \
+        AND height >= ? AND scriptpubkey LIKE '5120%';"
+        tpl = (low_filter, height)
+    spks = db.execute(qrystring, tpl).fetchall()
+    if audit:
+        return [(x[0], x[1]) for x in spks]
 
 if __name__ == "__main__":
     print("Using sat value filter: {}, input file: {}\
     , and output file: {}".format(*sys.argv[1:4]))
     c = setup_db(sys.argv[2])
     audit = True if len(sys.argv) > 4 and sys.argv[4] == "audit" else False
-    spks = select_the_scripts(c, sys.argv[1], audit)
+    height = None if len(sys.argv) > 6 else int(sys.argv[5])
+    spks = select_the_scripts(c, sys.argv[1], height)
     print("Retrieved this many taproot pubkeys: ", len(spks))
     if not audit:
         with open(sys.argv[3], "wb") as f:
-            f.write((" ".join([x[4:] for x in spks])).encode())
+            f.write((" ".join([x[0][4:] for x in spks])).encode())
     else:
         # we need to add the value as an additive tweak,
         # with the generator J; see the aut-ct repo for how J is generated.
