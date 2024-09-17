@@ -41,15 +41,14 @@ def select_the_scripts(db, low_filter, height=None):
         AND height >= ? AND scriptpubkey LIKE '5120%';"
         tpl = (low_filter, height)
     spks = db.execute(qrystring, tpl).fetchall()
-    if audit:
-        return [(x[0], x[1]) for x in spks]
+    return [(x[0], x[1]) for x in spks]
 
 if __name__ == "__main__":
     print("Using sat value filter: {}, input file: {}\
     , and output file: {}".format(*sys.argv[1:4]))
     c = setup_db(sys.argv[2])
     audit = True if len(sys.argv) > 4 and sys.argv[4] == "audit" else False
-    height = None if len(sys.argv) > 6 else int(sys.argv[5])
+    height = None if len(sys.argv) < 6 else int(sys.argv[5])
     spks = select_the_scripts(c, sys.argv[1], height)
     print("Retrieved this many taproot pubkeys: ", len(spks))
     pkonly = [x[0] for x in spks]
